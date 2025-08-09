@@ -1,11 +1,10 @@
-import postsFromServer from '../../api/posts.json';
 import { PostInfo } from '../PostInfo/PostInfo';
 import './PostList.scss';
 
-export const PostList = () => (
+export const PostList = ({ preparedPosts }) => (
   <div className="PostList">
-    {postsFromServer.map(post => (
-      <PostInfo post={post} />
+    {preparedPosts.map(post => (
+      <PostInfo post={post} key={post.id} />
     ))}
   </div>
 );
