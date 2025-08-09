@@ -5,16 +5,31 @@ import postsFromServer from './api/posts.json';
 import commentsFromServer from './api/comments.json';
 import usersFromServer from './api/users.json';
 
-const preparedPosts = postsFromServer.map(post => {
-  const user = usersFromServer.find(u => u.id === post.userId);
-  const postComments = commentsFromServer.filter(c => c.postId === post.id);
+const usersById = usersFromServer.reduce((acc, user) => {
+  // eslint-disable-next-line no-param-reassign
+  acc[user.id] = user;
 
-  return {
-    ...post,
-    user,
-    comments: postComments,
-  };
-});
+  return acc;
+}, {});
+
+const commentsByPostId = commentsFromServer.reduce((acc, comment) => {
+  const { postId } = comment;
+
+  if (!acc[postId]) {
+    // eslint-disable-next-line no-param-reassign
+    acc[postId] = [];
+  }
+
+  acc[postId].push(comment);
+
+  return acc;
+}, {});
+
+const preparedPosts = postsFromServer.map(post => ({
+  ...post,
+  user: usersById[post.userId],
+  comments: commentsByPostId[post.id] || [],
+}));
 
 export const App = () => (
   <section className="App">
